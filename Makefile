@@ -57,7 +57,6 @@ $(OBJ)/%.o: %.c
 
 -include $(addprefix $(DEPS)/,$(DFILES))
 
-
 .PHONY: clean doc test
 
 .DEFAULT: main
@@ -80,4 +79,23 @@ clean:
 	-rm -d deps/
 	-rm -d obj/
 
+#############################
+# Travis config
+#############################
+ping_travis:
+	echo "Hello travis!"
+
+RESET_REPO = rm -rf Sandskaddorna; git clone git@github.com:IOOPM-UU/Sandskaddorna.git;
+
+MERGE_CMD = cd ~/Sandskaddorna; git checkout $(TRAVIS_BRANCH); git pull origin $(TRAVIS_BRANCH);
+ifdef TRAVIS_PULL_REQUEST
+	MERGE_CMD += git pull origin $(TRAVIS_PULL_REQUEST_BRANCH);
+endif
+
+TEST_CMD = cd ~/Sandskaddorna; make clean; make test;
+
+test_servers:
+	ssh axny2639@tussilago.it.uu.se "$(RESET_REPO) $(MERGE_CMD) $(TEST_CMD)"
+	ssh axny2639@fries.it.uu.se "$(TEST_CMD)"
+ssh axny2639@yxan.it.uu.se "$(TEST_CMD)"
 
